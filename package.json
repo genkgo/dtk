@@ -10,6 +10,7 @@
     "broccoli-postcss": "^3.2.1",
     "broccoli-sass": "^0.7.0",
     "broccoli-stew": "^1.4.0",
+    "broccoli-uglify-sourcemap": "^1.5.1",
     "loader.js": "^4.1.0",
     "main-bower-files": "^2.13.1",
     "node-bourbon": "^4.2.8",
