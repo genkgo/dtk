@@ -29,7 +29,7 @@ describe('development build', function() {
 
 
   afterEach(function () {
-    // return cleanupBuilders();
+    return cleanupBuilders();
   });
 
   it('build all', function () {
@@ -60,7 +60,7 @@ describe('production build', function() {
 
 
   afterEach(function () {
-    // return cleanupBuilders();
+    return cleanupBuilders();
   });
 
   it('build all', function () {
