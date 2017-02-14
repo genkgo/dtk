@@ -16,6 +16,8 @@ let app;
 
 describe('development build', function() {
 
+  this.timeout(4000);
+
   before(function() {
     process.chdir(__dirname + '/fixtures/build');
 
