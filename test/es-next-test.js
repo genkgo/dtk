@@ -58,7 +58,7 @@ describe('transpile ES next', function() {
     });
   });
 
-  it('with dynamic import string', function () {
+  it('with module root', function () {
     return transpiler('es-next', 'es-next', {
       inputSourceMap: false,
       sourceMap: false
