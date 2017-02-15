@@ -19,11 +19,13 @@ describe('development build', function() {
   this.timeout(4000);
 
   before(function() {
-    process.chdir(__dirname + '/fixtures/build');
-
     app = makeTestHelper({
       subject: function() {
-        return new DtkApp({}).build({ 'environment': 'development'});
+        return new DtkApp({}).build({
+          'environment': 'development',
+          'baseDir': __dirname + '/fixtures/build',
+          'modulesDir': __dirname + '/../node_modules',
+        });
       },
       fixturePath: inputPath
     });
@@ -54,7 +56,11 @@ describe('production build', function() {
 
     app = makeTestHelper({
       subject: function() {
-        return new DtkApp({}).build({ 'environment': 'production'});
+        return new DtkApp({}).build({
+          'environment': 'production',
+          'baseDir': __dirname + '/fixtures/build',
+          'modulesDir': __dirname + '/../node_modules',
+        });
       },
       fixturePath: inputPath
     });
