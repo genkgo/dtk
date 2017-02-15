@@ -19,7 +19,7 @@ describe('transpile ES next', function() {
   before(function() {
     transpiler = makeTestHelper({
       subject: function() {
-        return new Transpiler(arguments[0], arguments[1], arguments[2]);
+        return new Transpiler.Local(arguments[0], arguments[1], arguments[2]);
       },
       fixturePath: inputPath
     });
