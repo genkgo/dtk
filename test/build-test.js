@@ -21,7 +21,7 @@ describe('development build', function() {
   before(function() {
     app = makeTestHelper({
       subject: function() {
-        return new DtkApp({}).build({
+        return new DtkApp().build({
           'environment': 'development',
           'baseDir': __dirname + '/fixtures/build',
           'modulesDir': __dirname + '/../node_modules',
@@ -56,7 +56,9 @@ describe('production build', function() {
 
     app = makeTestHelper({
       subject: function() {
-        return new DtkApp({}).build({
+        return new DtkApp({
+          'hash': '12345678'
+        }).build({
           'environment': 'production',
           'baseDir': __dirname + '/fixtures/build',
           'modulesDir': __dirname + '/../node_modules',
@@ -75,10 +77,13 @@ describe('production build', function() {
     return app().then(function(results) {
       let outputPath = results.directory;
 
-      let outputJs = fs.readFileSync(path.join(outputPath, 'js/scripts.js'), 'utf8');
-      let outputCss = fs.readFileSync(path.join(outputPath, 'css/screen.css'), 'utf8');
+      let outputJs = fs.readFileSync(path.join(outputPath, 'js/12345678-scripts.js'), 'utf8');
+      let outputCss = fs.readFileSync(path.join(outputPath, 'css/12345678-screen.css'), 'utf8');
+      let buildXsl = fs.readFileSync(__dirname + '/fixtures/build/app/templates/build.xsl', 'utf8');
       expect(outputJs.length).to.above(0);
       expect(outputCss.length).to.above(0);
+      expect(buildXsl.length).to.above(0);
+      expect(buildXsl).to.contain('12345678');
     });
   });
 
