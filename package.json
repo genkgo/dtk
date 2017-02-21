@@ -30,7 +30,8 @@
     "node-neat": "^1.7.2",
     "postcss-flexibility": "^1.1.0",
     "postcss-object-fit-images": "^1.1.2",
-    "promise-polyfill": "^6.0.2"
+    "promise-polyfill": "^6.0.2",
+    "quick-temp": "^0.1.8"
   },
   "devDependencies": {
     "broccoli-test-helpers": "0.0.8",
