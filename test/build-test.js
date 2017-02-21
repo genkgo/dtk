@@ -52,7 +52,6 @@ describe('development build', function() {
 describe('production build', function() {
 
   before(function() {
-    process.chdir(__dirname + '/fixtures/build');
 
     app = makeTestHelper({
       subject: function() {
@@ -80,10 +79,13 @@ describe('production build', function() {
       let outputJs = fs.readFileSync(path.join(outputPath, 'js/12345678-scripts.js'), 'utf8');
       let outputCss = fs.readFileSync(path.join(outputPath, 'css/12345678-screen.css'), 'utf8');
       let buildXsl = fs.readFileSync(__dirname + '/fixtures/build/app/templates/build.xsl', 'utf8');
+
+      console.log(outputPath);
       expect(outputJs.length).to.above(0);
       expect(outputCss.length).to.above(0);
       expect(buildXsl.length).to.above(0);
       expect(buildXsl).to.contain('12345678');
+      expect(fs.existsSync(path.join(outputPath, 'favicon/'))).to.be.true;
     });
   });
 
