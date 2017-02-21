@@ -46,5 +46,5 @@
     "test": "node_modules/mocha/bin/mocha test",
     "test:debug": "node_modules/mocha/bin/mocha debug test"
   },
-  "version": "0.5.1"
+  "version": "0.5.2"
 }
