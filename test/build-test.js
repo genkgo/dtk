@@ -51,6 +51,8 @@ describe('development build', function() {
 
 describe('production build', function() {
 
+  this.timeout(4000);
+
   before(function() {
 
     app = makeTestHelper({
@@ -80,7 +82,6 @@ describe('production build', function() {
       let outputCss = fs.readFileSync(path.join(outputPath, 'css/12345678-screen.css'), 'utf8');
       let buildXsl = fs.readFileSync(__dirname + '/fixtures/build/app/templates/build.xsl', 'utf8');
 
-      console.log(outputPath);
       expect(outputJs.length).to.above(0);
       expect(outputCss.length).to.above(0);
       expect(buildXsl.length).to.above(0);
