@@ -73,7 +73,7 @@ describe('transpile ES next', function() {
   });
 
   // skip because of https://github.com/babel/babel/issues/5370
-  xit('with dynamic string import', function () {
+  it('with dynamic string import', function () {
     return transpiler('es-next', 'es-next', {
       inputSourceMap: false,
       sourceMap: false

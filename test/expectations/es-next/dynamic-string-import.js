@@ -7,7 +7,7 @@ define('es-next/dynamic-string-import', ['exports'], function (exports) {
   var x = './dir';
 
   var y = new Promise(function (resolve) {
-    return resolve(require('./dir/class.js'));
+    return resolve(require(['./dir/class.js']));
   });
 
   exports.default = y;
