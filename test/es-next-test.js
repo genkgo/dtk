@@ -71,4 +71,19 @@ describe('transpile ES next', function() {
       expect(output).to.eql(input);
     });
   });
+
+  // skip because of https://github.com/babel/babel/issues/5370
+  xit('with dynamic string import', function () {
+    return transpiler('es-next', 'es-next', {
+      inputSourceMap: false,
+      sourceMap: false
+    }).then(function(results) {
+      let outputPath = results.directory;
+
+      let output = fs.readFileSync(path.join(outputPath, 'dynamic-string-import.js'), 'utf8');
+      let input = fs.readFileSync(path.join(expectations, 'es-next/dynamic-string-import.js'), 'utf8');
+
+      expect(output).to.eql(input);
+    });
+  });
 });
