@@ -44,7 +44,8 @@
   },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha test",
-    "test:debug": "node_modules/mocha/bin/mocha debug test"
+    "test:debug": "node_modules/mocha/bin/mocha debug test",
+    "preversion": "npm run test"
   },
   "version": "0.5.7"
 }
