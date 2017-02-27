@@ -25,7 +25,7 @@
     "imagemin-jpegtran": "^5.0.2",
     "imagemin-optipng": "^5.2.1",
     "imagemin-svgo": "^5.2.0",
-    "loader.js": "~4.1.0",
+    "loader.js": "^4.1.0",
     "lodash.merge": "^4.6.0",
     "modernizr": "^3.3.1",
     "node-bourbon": "^4.2.8",
