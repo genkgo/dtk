@@ -16,7 +16,7 @@ let app;
 
 describe('development build', function() {
 
-  this.timeout(4000);
+  this.timeout(8000);
 
   before(function() {
     app = makeTestHelper({
