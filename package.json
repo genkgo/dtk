@@ -45,5 +45,5 @@
     "test:debug": "node_modules/mocha/bin/mocha debug test",
     "preversion": "npm run test"
   },
-  "version": "0.5.19"
+  "version": "0.6.0"
 }
