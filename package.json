@@ -2,7 +2,7 @@
   "name": "genkgo-dtk",
   "main": "lib/dtk-app.js",
   "dependencies": {
-    "autoprefixer": "^6.7.2",
+    "autoprefixer": "^8.0.0",
     "babel-plugin-dynamic-import-amd": "^1.0.0",
     "babel-plugin-transform-es2015-modules-amd": "^6.4.3",
     "babel-plugin-transform-strict-mode": "^6.3.13",
