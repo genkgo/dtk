@@ -1,0 +1,27 @@
+files:
+  include: 'app/assets/scss/**/*.s+(a|c)ss'
+  ignore:
+    - 'vendor/**/*.scss'
+options:
+  formatter: stylish
+  merge-default-rules: false
+rules:
+  clean-import-paths:
+      - leading-underscore: false
+      - filename-extension: false
+
+  empty-line-between-blocks:
+      - 1
+      - ignore-single-line-rulesets: false
+
+  nesting-depth:
+      - 2
+
+  property-sort-order:
+      - 1
+      - ignore-custom-properties: false
+      - order: alphabetical
+
+  quotes:
+        - 1
+        - style: double

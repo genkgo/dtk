@@ -32,6 +32,7 @@
     "postcss-object-fit-images": "^1.1.2"
   },
   "devDependencies": {
+    "broccoli-sass-lint": "^1.1.2",
     "broccoli-test-helpers": "0.0.8",
     "chai": "^3.5.0",
     "mkdirp": "^0.5.1",
