@@ -30,7 +30,7 @@
     "loader.js": "^4.1.0",
     "lodash.merge": "^4.6.0",
     "modernizr": "^3.5.0",
-    "postcss-discard-unused":" ^4.0.1",
+    "postcss-discard-unused": " ^4.0.1",
     "postcss-flexibility": "^2.0.0",
     "postcss-object-fit-images": "^1.1.2"
   },
