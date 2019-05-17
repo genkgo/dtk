@@ -20,8 +20,8 @@ describe('development build', function() {
 
   before(function() {
     app = makeTestHelper({
-      subject: function() {
-        return new DtkApp().build({
+      subject: function(options) {
+        return new DtkApp(options).build({
           'environment': 'development',
           'baseDir': __dirname + '/fixtures/build',
           'modulesDir': __dirname + '/../node_modules',
@@ -56,10 +56,11 @@ describe('production build', function() {
   before(function() {
 
     app = makeTestHelper({
-      subject: function() {
-        return new DtkApp({
-          'hash': '12345678'
-        }).build({
+      subject: function(options) {
+        options = options || {};
+        options['hash'] = '12345678';
+
+        return new DtkApp(options).build({
           'environment': 'production',
           'baseDir': __dirname + '/fixtures/build',
           'modulesDir': __dirname + '/../node_modules',
@@ -83,6 +84,24 @@ describe('production build', function() {
       let buildXsl = fs.readFileSync(__dirname + '/fixtures/build/app/templates/build.xsl', 'utf8');
 
       expect(outputJs.length).to.above(0);
+      expect(outputCss.length).to.above(0);
+      expect(buildXsl.length).to.above(0);
+      expect(buildXsl).to.contain('12345678');
+      expect(fs.existsSync(path.join(outputPath, 'favicon/'))).to.be.true;
+    });
+  });
+
+  it('build all with vendor splitted', function () {
+    return app({js: { splitVendor: true }}).then(function(results) {
+      let outputPath = results.directory;
+
+      let outputJs = fs.readFileSync(path.join(outputPath, 'js/12345678-scripts.js'), 'utf8');
+      let outputVendor = fs.readFileSync(path.join(outputPath, 'js/12345678-vendor.js'), 'utf8');
+      let outputCss = fs.readFileSync(path.join(outputPath, 'css/12345678-screen.css'), 'utf8');
+      let buildXsl = fs.readFileSync(__dirname + '/fixtures/build/app/templates/build.xsl', 'utf8');
+
+      expect(outputJs.length).to.above(0);
+      expect(outputVendor.length).to.above(0);
       expect(outputCss.length).to.above(0);
       expect(buildXsl.length).to.above(0);
       expect(buildXsl).to.contain('12345678');
