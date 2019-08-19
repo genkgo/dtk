@@ -40,7 +40,7 @@ describe('transpile ES next', function() {
       let output = fs.readFileSync(path.join(outputPath, 'import-export.js'), 'utf8');
       let input = fs.readFileSync(path.join(expectations, 'es-next/import-export.js'), 'utf8');
 
-      expect(output).to.eql(input);
+      expect(output.trim()).to.eql(input.trim());
     });
   });
 
@@ -54,7 +54,7 @@ describe('transpile ES next', function() {
       let output = fs.readFileSync(path.join(outputPath, 'dynamic-import.js'), 'utf8');
       let input = fs.readFileSync(path.join(expectations, 'es-next/dynamic-import.js'), 'utf8');
 
-      expect(output).to.eql(input);
+      expect(output.trim()).to.eql(input.trim());
     });
   });
 
@@ -68,7 +68,7 @@ describe('transpile ES next', function() {
       let output = fs.readFileSync(path.join(outputPath, 'module-root.js'), 'utf8');
       let input = fs.readFileSync(path.join(expectations, 'es-next/module-root.js'), 'utf8');
 
-      expect(output).to.eql(input);
+      expect(output.trim()).to.eql(input.trim());
     });
   });
 
@@ -83,7 +83,21 @@ describe('transpile ES next', function() {
       let output = fs.readFileSync(path.join(outputPath, 'dynamic-string-import.js'), 'utf8');
       let input = fs.readFileSync(path.join(expectations, 'es-next/dynamic-string-import.js'), 'utf8');
 
-      expect(output).to.eql(input);
+      expect(output.trim()).to.eql(input.trim());
+    });
+  });
+
+  it('async await', function () {
+    return transpiler('es-next', 'es-next', {
+      inputSourceMap: false,
+      sourceMap: false
+    }).then(function(results) {
+      let outputPath = results.directory;
+
+      let output = fs.readFileSync(path.join(outputPath, 'async-await.js'), 'utf8');
+      let input = fs.readFileSync(path.join(expectations, 'es-next/async-await.js'), 'utf8');
+
+      expect(output.trim()).to.eql(input.trim());
     });
   });
 });
