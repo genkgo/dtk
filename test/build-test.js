@@ -1,112 +1,111 @@
 'use strict';
 
-let fs = require('fs');
-let expect = require('chai').expect;
-let path = require('path');
-let DtkApp = require('../lib/dtk-app');
-let helpers = require('broccoli-test-helpers');
+const { createBuilder, createTempDir } = require('broccoli-test-helper');
+const { expect } = require('chai');
+const DtkApp = require('../lib/dtk-app');
+const fs = require('fs');
 
-let makeTestHelper = helpers.makeTestHelper;
-let cleanupBuilders = helpers.cleanupBuilders;
-
-let inputPath = path.join(__dirname, 'fixtures');
-let expectations = path.join(__dirname, 'expectations');
-
-let app;
-
-describe('development build', function() {
-
+describe('development build', function () {
   this.timeout(8000);
 
-  before(function() {
-    app = makeTestHelper({
-      subject: function(options) {
-        return new DtkApp(options).build({
-          'environment': 'development',
-          'baseDir': __dirname + '/fixtures/build',
-          'modulesDir': __dirname + '/../node_modules',
-        });
-      },
-      fixturePath: inputPath
-    });
+  it('should build', async function () {
+    const input = await createTempDir();
+    try {
+      const subject = new DtkApp().build({
+        'environment': 'development',
+        'baseDir': __dirname + '/fixtures/build',
+        'modulesDir': __dirname + '/../node_modules',
+      });
+
+      const output = createBuilder(subject);
+      try {
+        await output.build();
+
+        let contents = output.read();
+        expect(contents).to.include.all.keys('css', 'favicon', 'img', 'js');
+        expect(contents['js']).to.include.all.keys('scripts.js');
+        expect(contents['js']['scripts.js'].length).to.above(0);
+        expect(contents['css']).to.include.all.keys('screen.css');
+        expect(contents['css']['screen.css'].length).to.above(0);
+        expect(contents['img']).to.include.all.keys('alpha.gif');
+        expect(contents['img']['alpha.gif'].length).to.above(0);
+        expect(contents['favicon']).to.include.all.keys('.gitkeep');
+      } finally {
+        await output.dispose();
+      }
+    } finally {
+      await input.dispose();
+    }
   });
-
-
-  afterEach(function () {
-    return cleanupBuilders();
-  });
-
-  it('build all', function () {
-    return app().then(function(results) {
-      let outputPath = results.directory;
-
-      let outputJs = fs.readFileSync(path.join(outputPath, 'js/scripts.js'), 'utf8');
-      let outputCss = fs.readFileSync(path.join(outputPath, 'css/screen.css'), 'utf8');
-      expect(outputJs.length).to.above(0);
-      expect(outputCss.length).to.above(0);
-    });
-  });
-
 });
 
-describe('production build', function() {
-
+describe('production build', function () {
   this.timeout(8000);
 
-  before(function() {
+  it('should build, all scripts concatenated', async function () {
+    const input = await createTempDir();
+    try {
+      const subject = new DtkApp({ hash: '12345678'}).build({
+        'environment': 'production',
+        'baseDir': __dirname + '/fixtures/build',
+        'modulesDir': __dirname + '/../node_modules',
+      });
 
-    app = makeTestHelper({
-      subject: function(options) {
-        options = options || {};
-        options['hash'] = '12345678';
+      const output = createBuilder(subject);
+      try {
+        await output.build();
 
-        return new DtkApp(options).build({
-          'environment': 'production',
-          'baseDir': __dirname + '/fixtures/build',
-          'modulesDir': __dirname + '/../node_modules',
-        });
-      },
-      fixturePath: inputPath
-    });
+        let contents = output.read();
+        expect(contents).to.include.all.keys('css', 'favicon', 'img', 'js');
+        expect(contents['js']).to.include.all.keys('12345678-scripts.js');
+        expect(contents['js']['12345678-scripts.js'].length).to.above(0);
+        expect(contents['css']).to.include.all.keys('12345678-screen.css');
+        expect(contents['css']['12345678-screen.css'].length).to.above(0);
+        expect(contents['img']).to.include.all.keys('alpha.gif');
+        expect(contents['img']['alpha.gif'].length).to.above(0);
+        expect(contents['favicon']).to.include.all.keys('.gitkeep');
+
+        let buildXsl = fs.readFileSync(__dirname + '/fixtures/build/app/templates/build.xsl', 'utf8');
+        expect(buildXsl).to.contain('12345678');
+      } finally {
+        await output.dispose();
+      }
+    } finally {
+      await input.dispose();
+    }
   });
 
+  it('should build, with vendor separated', async function () {
+    const input = await createTempDir();
+    try {
+      const subject = new DtkApp({ hash: '12345678', js: { splitVendor: true }}).build({
+        'environment': 'production',
+        'baseDir': __dirname + '/fixtures/build',
+        'modulesDir': __dirname + '/../node_modules',
+      });
 
-  afterEach(function () {
-    return cleanupBuilders();
+      const output = createBuilder(subject);
+      try {
+        await output.build();
+
+        let contents = output.read();
+        expect(contents).to.include.all.keys('css', 'favicon', 'img', 'js');
+        expect(contents['js']).to.include.all.keys('12345678-scripts.js', '12345678-vendor.js');
+        expect(contents['js']['12345678-scripts.js'].length).to.above(0);
+        expect(contents['js']['12345678-vendor.js'].length).to.above(0);
+        expect(contents['css']).to.include.all.keys('12345678-screen.css');
+        expect(contents['css']['12345678-screen.css'].length).to.above(0);
+        expect(contents['img']).to.include.all.keys('alpha.gif');
+        expect(contents['img']['alpha.gif'].length).to.above(0);
+        expect(contents['favicon']).to.include.all.keys('.gitkeep');
+
+        let buildXsl = fs.readFileSync(__dirname + '/fixtures/build/app/templates/build.xsl', 'utf8');
+        expect(buildXsl).to.contain('12345678');
+      } finally {
+        await output.dispose();
+      }
+    } finally {
+      await input.dispose();
+    }
   });
-
-  it('build all', function () {
-    return app().then(function(results) {
-      let outputPath = results.directory;
-
-      let outputJs = fs.readFileSync(path.join(outputPath, 'js/12345678-scripts.js'), 'utf8');
-      let outputCss = fs.readFileSync(path.join(outputPath, 'css/12345678-screen.css'), 'utf8');
-      let buildXsl = fs.readFileSync(__dirname + '/fixtures/build/app/templates/build.xsl', 'utf8');
-
-      expect(outputJs.length).to.above(0);
-      expect(outputCss.length).to.above(0);
-      expect(buildXsl.length).to.above(0);
-      expect(buildXsl).to.contain('12345678');
-      expect(fs.existsSync(path.join(outputPath, 'favicon/'))).to.be.true;
-    });
-  });
-
-  it('build all with vendor splitted', function () {
-    return app({js: { splitVendor: true }}).then(function(results) {
-      let outputPath = results.directory;
-
-      let outputJs = fs.readFileSync(path.join(outputPath, 'js/12345678-scripts.js'), 'utf8');
-      let outputVendor = fs.readFileSync(path.join(outputPath, 'js/12345678-vendor.js'), 'utf8');
-      let outputCss = fs.readFileSync(path.join(outputPath, 'css/12345678-screen.css'), 'utf8');
-      let buildXsl = fs.readFileSync(__dirname + '/fixtures/build/app/templates/build.xsl', 'utf8');
-
-      expect(outputJs.length).to.above(0);
-      expect(outputVendor.length).to.above(0);
-      expect(outputCss.length).to.above(0);
-      expect(buildXsl.length).to.above(0);
-      expect(buildXsl).to.contain('12345678');
-      expect(fs.existsSync(path.join(outputPath, 'favicon/'))).to.be.true;
-    });
-  });
-
 });

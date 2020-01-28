@@ -1,103 +1,45 @@
 'use strict';
 
-let fs = require('fs');
-let expect = require('chai').expect;
-let path = require('path');
-let Transpiler = require('../lib/esnext-transpiler');
-let helpers = require('broccoli-test-helpers');
+const { createBuilder, createTempDir, fromDir } = require('broccoli-test-helper');
+const { expect } = require('chai');
+const Transpiler = require('../lib/esnext-transpiler');
+const fs = require('fs');
+const path = require('path');
+const expectations = path.join(__dirname, 'expectations');
 
-let makeTestHelper = helpers.makeTestHelper;
-let cleanupBuilders = helpers.cleanupBuilders;
+describe('transpile ES next', function () {
+  this.timeout(8000);
 
-let inputPath = path.join(__dirname, 'fixtures');
-let expectations = path.join(__dirname, 'expectations');
+  it('should transpile import export', async function () {
+    const fixtures = fromDir(__dirname + '/fixtures/es-next');
+    const input = await createTempDir();
+    input.write(fixtures.read());
 
-let transpiler;
+    try {
+      const subject = new Transpiler.Local(input.path(), 'es-next', {
+        inputSourceMap: false,
+        sourceRoot: process.cwd(),
+        sourceMap: false,
+        persist: false,
+      });
 
-describe('transpile ES next', function() {
+      const output = createBuilder(subject);
+      try {
+        await output.build();
 
-  before(function() {
-    transpiler = makeTestHelper({
-      subject: function() {
-        return new Transpiler.Local(arguments[0], arguments[1], arguments[2]);
-      },
-      fixturePath: inputPath
-    });
-  });
+        let contents = output.read();
 
-
-  afterEach(function () {
-    return cleanupBuilders();
-  });
-
-  it('static import export', function () {
-    return transpiler('es-next', 'es-next', {
-      inputSourceMap: false,
-      sourceMap: false
-    }).then(function(results) {
-      let outputPath = results.directory;
-
-      let output = fs.readFileSync(path.join(outputPath, 'import-export.js'), 'utf8');
-      let input = fs.readFileSync(path.join(expectations, 'es-next/import-export.js'), 'utf8');
-
-      expect(output.trim()).to.eql(input.trim());
-    });
-  });
-
-  it('with dynamic import', function () {
-    return transpiler('es-next', 'es-next', {
-      inputSourceMap: false,
-      sourceMap: false
-    }).then(function(results) {
-      let outputPath = results.directory;
-
-      let output = fs.readFileSync(path.join(outputPath, 'dynamic-import.js'), 'utf8');
-      let input = fs.readFileSync(path.join(expectations, 'es-next/dynamic-import.js'), 'utf8');
-
-      expect(output.trim()).to.eql(input.trim());
-    });
-  });
-
-  it('with module root', function () {
-    return transpiler('es-next', 'es-next', {
-      inputSourceMap: false,
-      sourceMap: false
-    }).then(function(results) {
-      let outputPath = results.directory;
-
-      let output = fs.readFileSync(path.join(outputPath, 'module-root.js'), 'utf8');
-      let input = fs.readFileSync(path.join(expectations, 'es-next/module-root.js'), 'utf8');
-
-      expect(output.trim()).to.eql(input.trim());
-    });
-  });
-
-  // skip because of https://github.com/babel/babel/issues/5370
-  it('with dynamic string import', function () {
-    return transpiler('es-next', 'es-next', {
-      inputSourceMap: false,
-      sourceMap: false
-    }).then(function(results) {
-      let outputPath = results.directory;
-
-      let output = fs.readFileSync(path.join(outputPath, 'dynamic-string-import.js'), 'utf8');
-      let input = fs.readFileSync(path.join(expectations, 'es-next/dynamic-string-import.js'), 'utf8');
-
-      expect(output.trim()).to.eql(input.trim());
-    });
-  });
-
-  it('async await', function () {
-    return transpiler('es-next', 'es-next', {
-      inputSourceMap: false,
-      sourceMap: false
-    }).then(function(results) {
-      let outputPath = results.directory;
-
-      let output = fs.readFileSync(path.join(outputPath, 'async-await.js'), 'utf8');
-      let input = fs.readFileSync(path.join(expectations, 'es-next/async-await.js'), 'utf8');
-
-      expect(output.trim()).to.eql(input.trim());
-    });
+        let files = ['import-export.js', 'dynamic-import.js', 'dynamic-string-import.js', 'module-root.js', 'async-await.js'];
+        for (let file of files) {
+          let expected = fs.readFileSync(path.join(expectations, 'es-next/' + file), 'utf8');
+          expect(contents).to.include.any.keys(file);
+          expect(contents[file].trim()).to.eql(expected.trim());
+        }
+      } finally {
+        await output.dispose();
+      }
+    } finally {
+      await input.dispose();
+    }
   });
 });

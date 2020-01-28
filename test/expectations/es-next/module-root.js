@@ -1,17 +1,14 @@
-define('es-next/module-root', ['exports', 'import-export'], function (exports, _importExport) {
-  'use strict';
+define("es-next/module-root", ["exports", "import-export"], function (_exports, _importExport) {
+  "use strict";
 
-  Object.defineProperty(exports, "__esModule", {
+  Object.defineProperty(_exports, "__esModule", {
     value: true
   });
+  _exports.default = void 0;
+  _importExport = _interopRequireDefault(_importExport);
 
-  var _importExport2 = _interopRequireDefault(_importExport);
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-  function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : {
-      default: obj
-    };
-  }
-
-  exports.default = _importExport2.default;
+  var _default = _importExport.default;
+  _exports.default = _default;
 });
