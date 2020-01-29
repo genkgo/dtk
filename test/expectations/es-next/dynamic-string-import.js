@@ -14,7 +14,7 @@ define("es-next/dynamic-string-import", ["require", "exports"], function (_requi
 
   var x = './dir';
   var y = new Promise(function (_resolve, _reject) {
-    return _require(['./dir/class.js'], function (imported) {
+    return _require('./dir/class.js', function (imported) {
       return _resolve(_interopRequireWildcard(imported));
     }, _reject);
   });
