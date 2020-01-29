@@ -11,6 +11,7 @@
     "@babel/preset-env": "^7.8.3",
     "@babel/template": "^7.8.3",
     "autoprefixer": "^9.7.4",
+    "babel-eslint": "^10.0.3",
     "broccoli-babel-transpiler": "^7.4.0",
     "broccoli-concat": "^4.2.2",
     "broccoli-funnel": "^3.0.1",
