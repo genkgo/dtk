@@ -14,9 +14,11 @@ define("es-next/dynamic-import", ["require", "exports"], function (_require, _ex
 
   var x = './dir';
   var y = new Promise(function (_resolve, _reject) {
-    return _require("".concat(x + '/class.js'), function (imported) {
-      return _resolve(_interopRequireWildcard(imported));
-    }, _reject);
+    try {
+      _resolve(_require("".concat(x + '/class.js')));
+    } catch (e) {
+      _reject();
+    }
   });
   var _default = y;
   _exports.default = _default;
