@@ -18,7 +18,6 @@ describe('transpile ES next', function () {
     try {
       const subject = new Transpiler.Local(input.path(), 'es-next', {
         inputSourceMap: false,
-        sourceRoot: process.cwd(),
         sourceMap: false,
         persist: false,
       });
