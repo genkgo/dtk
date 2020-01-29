@@ -22,8 +22,8 @@ describe('development build', function () {
         await output.build();
 
         let contents = output.read();
-        expect(contents).to.include.all.keys('css', 'favicon', 'img', 'js');
-        expect(contents['js']).to.include.all.keys('scripts.js');
+        expect(contents).to.have.all.keys('css', 'favicon', 'img', 'js');
+        expect(contents['js']).to.have.all.keys('scripts.js', 'scripts.map');
         expect(contents['js']['scripts.js'].length).to.above(0);
         expect(contents['css']).to.include.all.keys('screen.css');
         expect(contents['css']['screen.css'].length).to.above(0);
@@ -56,8 +56,8 @@ describe('production build', function () {
         await output.build();
 
         let contents = output.read();
-        expect(contents).to.include.all.keys('css', 'favicon', 'img', 'js');
-        expect(contents['js']).to.include.all.keys('12345678-scripts.js');
+        expect(contents).to.have.all.keys('css', 'favicon', 'img', 'js');
+        expect(contents['js']).to.have.all.keys('12345678-scripts.js');
         expect(contents['js']['12345678-scripts.js'].length).to.above(0);
         expect(contents['css']).to.include.all.keys('12345678-screen.css');
         expect(contents['css']['12345678-screen.css'].length).to.above(0);
@@ -89,8 +89,8 @@ describe('production build', function () {
         await output.build();
 
         let contents = output.read();
-        expect(contents).to.include.all.keys('css', 'favicon', 'img', 'js');
-        expect(contents['js']).to.include.all.keys('12345678-scripts.js', '12345678-vendor.js');
+        expect(contents).to.have.all.keys('css', 'favicon', 'img', 'js');
+        expect(contents['js']).to.have.all.keys('12345678-scripts.js', '12345678-vendor.js');
         expect(contents['js']['12345678-scripts.js'].length).to.above(0);
         expect(contents['js']['12345678-vendor.js'].length).to.above(0);
         expect(contents['css']).to.include.all.keys('12345678-screen.css');
