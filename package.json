@@ -18,7 +18,7 @@
     "broccoli-imagemin": "^2.0.1",
     "broccoli-lint-eslint": "^6.0.0",
     "broccoli-merge-trees": "^4.2.0",
-    "broccoli-postcss": "^5.0.0",
+    "broccoli-postcss": "^6.0.0",
     "broccoli-sass-source-maps": "^4.0.0",
     "broccoli-source": "^3.0.0",
     "broccoli-stew": "^3.0.0",
