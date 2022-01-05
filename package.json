@@ -47,12 +47,12 @@
     "mocha": "^7.0.1"
   },
   "engines": {
-    "node": ">=12.19.0"
+    "node": ">=16.13.1"
   },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha --exit test",
     "test:debug": "node_modules/mocha/bin/mocha debug test",
     "preversion": "npm run test"
   },
-  "version": "0.7.29"
+  "version": "0.8.0"
 }
