@@ -108,4 +108,41 @@ describe('production build', function () {
       await input.dispose();
     }
   });
+
+  it('should build, without build.xsl', async function () {
+    const input = await createTempDir();
+    if (fs.existsSync(__dirname + '/fixtures/build/app/templates/build.xsl')) {
+      fs.unlinkSync(__dirname + '/fixtures/build/app/templates/build.xsl');
+    }
+
+    try {
+      const subject = new DtkApp({ hash: '12345678'}).build({
+        'environment': 'production',
+        'baseDir': __dirname + '/fixtures/build',
+        'modulesDir': __dirname + '/../node_modules',
+        'build-xsl': false
+      });
+
+      const output = createBuilder(subject);
+      try {
+        await output.build();
+
+        let contents = output.read();
+        expect(contents).to.have.all.keys('css', 'favicon', 'img', 'js');
+        expect(contents['js']).to.have.all.keys('12345678-scripts.js');
+        expect(contents['js']['12345678-scripts.js'].length).to.above(0);
+        expect(contents['css']).to.include.all.keys('12345678-screen.css');
+        expect(contents['css']['12345678-screen.css'].length).to.above(0);
+        expect(contents['img']).to.include.all.keys('alpha.gif');
+        expect(contents['img']['alpha.gif'].length).to.above(0);
+        expect(contents['favicon']).to.include.all.keys('.gitkeep');
+
+        expect(fs.existsSync(__dirname + '/fixtures/build/app/templates/build.xsl')).to.be.false;
+      } finally {
+        await output.dispose();
+      }
+    } finally {
+      await input.dispose();
+    }
+  });
 });
