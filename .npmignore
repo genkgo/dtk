@@ -1,8 +1,6 @@
 /.jshint*
 /.gitignore
 /.npmignore
-/.travis.yml
 /test
 /docs
-/appveyor.yml
 /.idea
