@@ -32,7 +32,7 @@ describe('transpile ES next', function () {
         for (let file of files) {
           let expected = fs.readFileSync(path.join(expectations, 'es-next/' + file), 'utf8');
           expect(contents).to.include.any.keys(file);
-          expect(contents[file].trim()).to.eql(expected.trim());
+          expect(contents[file].trim()).to.eql(expected.trim(), `testing ${file}`);
         }
       } finally {
         await output.dispose();

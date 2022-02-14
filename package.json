@@ -2,6 +2,7 @@
   "name": "genkgo-dtk",
   "main": "lib/dtk-app.js",
   "dependencies": {
+    "@babel/eslint-parser": "^7.5.4",
     "@babel/plugin-proposal-dynamic-import": "^7.16.7",
     "@babel/plugin-transform-async-to-generator": "^7.16.8",
     "@babel/plugin-transform-classes": "^7.16.7",
@@ -11,7 +12,6 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/template": "^7.16.7",
     "autoprefixer": "^9.8.8",
-    "babel-eslint": "^10.0.3",
     "broccoli-babel-transpiler": "^7.8.0",
     "broccoli-concat": "^4.2.5",
     "broccoli-funnel": "^3.0.8",
