@@ -44,7 +44,7 @@
     "mocha": "^7.0.1"
   },
   "engines": {
-    "node": "^16.14.0 || ^18.13.0"
+    "node": "^18.13.0 || ^20.9"
   },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha --exit test",
