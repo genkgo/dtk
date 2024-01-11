@@ -69,7 +69,13 @@ class DtkApp {
         }
       }
 
-      await fs.writeFile(options.root + '/node_modules/.vite/_npm.scss', css.join("\n"));
+      if (this.config.scss.compile) {
+        for (let compileScss of this.config.scss.compile) {
+          await fs.writeFile(options.root + '/app/assets/scss/' + path.dirname(compileScss) + '/_npm.scss', css.join("\n"));
+        }
+      } else {
+        await fs.writeFile(options.root + '/app/assets/scss/_npm.scss', css.join("\n"));
+      }
     }
   }
 }
