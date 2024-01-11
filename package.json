@@ -17,6 +17,6 @@
     "vite-plugin-image-optimizer": "^1.1.7"
   },
   "bin": {
-    "g2dtk": "bin/g2dtk.js"
+    "g2dtk": "bin/g2dtk"
   }
 }
