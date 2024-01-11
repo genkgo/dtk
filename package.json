@@ -1,0 +1,22 @@
+{
+  "name": "genkgo-dtk",
+  "main": "src/app.js",
+  "type": "module",
+  "version": "0.8.0",
+  "engines": {
+    "node": "^20.9"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.16",
+    "cac": "^6.7.14",
+    "magic-string": "^0.30.5",
+    "sass": "^1.69.7",
+    "sharp": "^0.33.1",
+    "svgo": "^3.2.0",
+    "vite": "^5.0.2",
+    "vite-plugin-image-optimizer": "^1.1.7"
+  },
+  "bin": {
+    "g2dtk": "bin/g2dtk.js"
+  }
+}
