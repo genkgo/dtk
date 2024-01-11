@@ -23,8 +23,8 @@ export default defineConfig({
   resolve: {
     alias: {
       moment: '{root}/node_modules/moment/moment.js',
-      modernizr: '{dtk}/dep/modernizr.js',
-      'jquery-ui': '{dtk}/dep/jquery-ui',
+      modernizr: '{dtk}/../dep/modernizr.js',
+      'jquery-ui': '{dtk}/../dep/jquery-ui',
     }
   },
   build: {
