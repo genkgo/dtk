@@ -14,6 +14,7 @@ try {
   }
 
   root = path.dirname(appFile.filename);
+  updatedConfigFile = root + '/node_modules/.vite/vite.config.js';
 
   const dtk = path.dirname(currentScript);
   const appInstance = (await import(appFile.filename)).default;
