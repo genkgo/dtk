@@ -22,6 +22,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      npm: '{root}/node_modules/.vite/_npm.scss',
       moment: '{root}/node_modules/moment/moment.js',
       modernizr: '{dtk}/../dep/modernizr.js',
       'jquery-ui': '{dtk}/../dep/jquery-ui',

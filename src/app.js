@@ -13,9 +13,9 @@ class DtkApp {
     this.config = config;
   }
 
-  async convertToVite(configFile, targetFile, options = {}) {
+  async convertToVite(options = {}) {
     await this.validate(options);
-    await this.convertConfig(configFile, targetFile, options);
+    await this.convertConfig(options);
     await this.writeNpmScssImport(options);
   }
 
@@ -32,7 +32,9 @@ class DtkApp {
     }
   }
 
-  async convertConfig(configFile, targetFile, options) {
+  async convertConfig(options) {
+    let configFile = options.dtk + '/vite.config.js'
+    let targetFile = options.root + '/node_modules/.vite/vite.config.js';
     let input = {
       index: './app/assets/js/index.js',
     };
@@ -67,15 +69,7 @@ class DtkApp {
         }
       }
 
-      if (css.length > 0) {
-        if (this.config.scss.compile) {
-          for (let compileScss of this.config.scss.compile) {
-            await fs.writeFile(options.root + '/app/assets/scss/' + path.dirname(compileScss) + '/_npm.scss', css.join("\n"));
-          }
-        } else {
-          await fs.writeFile(options.root + '/app/assets/scss/_npm.scss', css.join("\n"));
-        }
-      }
+      await fs.writeFile(options.root + '/node_modules/.vite/_npm.scss', css.join("\n"));
     }
   }
 }
