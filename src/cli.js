@@ -1,16 +1,22 @@
 import {CAC} from 'cac';
 import fs from 'fs/promises';
+import path from 'path';
 import findDtkFile from './find-dtk-file.js';
 
-const appFile = await findDtkFile(import.meta.url);
-const root = new URL('.', appFile).toString().replace('file://', '');
-const dtk = new URL('.', import.meta.url).toString().replace('file://', '');
-const appInstance = (await import(root + '/../g2dtk.js')).default;
-const updatedConfigFile = root + '/node_modules/.vite/vite.config.js';
-
-await fs.mkdir(root + '/node_modules/.vite', { recursive: true });
-
+let updatedConfigFile, root;
 try {
+  const appFile = findDtkFile(import.meta.url).next();
+  if (!appFile.filename) {
+    throw new Error("Failed to find g2dtk.js");
+  }
+
+  root = path.dirname(appFile.filename);
+  updatedConfigFile = root + '/node_modules/.vite/vite.config.js';
+
+  const dtk = new URL('.', import.meta.url).toString().replace('file://', '');
+  const appInstance = (await import(appFile.filename)).default;
+
+  await fs.mkdir(root + '/node_modules/.vite', { recursive: true });
   await appInstance.convertToVite(
     new URL('vite.config.js', import.meta.url).toString().replace('file://', ''),
     updatedConfigFile,
