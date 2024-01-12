@@ -36,6 +36,27 @@ async function readPackageJson() {
   return JSON.parse(await fs.readFile(root + '/package.json'));
 }
 
+async function updateInFiles(directory, search, replace) {
+  let updatedFiles = [];
+  const files = await fs.readdir(directory, {recursive: true});
+  for (let file of files) {
+    let fileFullName = `${directory}/${file}`;
+    if ((await fs.lstat(fileFullName)).isDirectory()) {
+      continue;
+    }
+
+    let fileContents = await fs.readFile(fileFullName);
+    if (fileContents.includes(search)) {
+      fileContents = fileContents.toString().replaceAll(search, replace);
+      await fs.writeFile(fileFullName, fileContents);
+      console.log(`> Updated ${fileFullName}`);
+      updatedFiles.push(fileFullName);
+    }
+  }
+
+  return updatedFiles;
+}
+
 const cli = new CAC('g2dtk');
 
 cli.command('upgrade-dtk').action(async () => {
@@ -82,26 +103,16 @@ cli.command('upgrade-dtk').action(async () => {
   await rl.question('Did you update env-path/image-path variable inside your template to use vite:debug-url()? (I am not checking for you):');
 
   console.log("\nNo space inside `@media screen and(` is not allowed in dart-sass. It must be `@media screen and (.");
+  let answerMedia = (await rl.question('Do you want me to convert?:')).toLowerCase();
+  if (answerMedia === 'y' || answerMedia === 'yes') {
+    let updatedFiles = updateInFiles(root + '/app/assets/scss', '@media screen and(', '@media screen and (');
+    console.log(`> Totally updated ${updatedFiles.length} files`);
+  }
 
-  let updatedFiles = [];
-  let answer = (await rl.question('Do you want me to convert?:')).toLowerCase();
-  if (answer === 'y' || answer === 'yes') {
-    const scssFiles = await fs.readdir(root + '/app/assets/scss', {recursive: true});
-    for (let scssFile of scssFiles) {
-      let scssFullName = root + '/app/assets/scss/' + scssFile;
-      if ((await fs.lstat(scssFullName)).isDirectory()) {
-        continue;
-      }
-
-      let fileContents = await fs.readFile(scssFullName);
-      if (fileContents.includes('@media screen and(')) {
-        fileContents = fileContents.toString().replaceAll('@media screen and(', '@media screen and (');
-        await fs.writeFile(scssFullName, fileContents);
-        console.log(`> Updated ${scssFullName}`);
-        updatedFiles.push(scssFullName);
-      }
-    }
-
+  console.log("\nTilde importing, like @import \"~normalize.css/normalize.css\", does not work with Vite. Do you want me to update?");
+  let answerTildeImport = (await rl.question('Do you want me to convert?:')).toLowerCase();
+  if (answerTildeImport === 'y' || answerTildeImport === 'yes') {
+    let updatedFiles = updateInFiles(root + '/app/assets/scss', '@import "~', '@import "');
     console.log(`> Totally updated ${updatedFiles.length} files`);
   }
 
