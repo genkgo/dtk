@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import findDtkFile from './find-dtk-file.js';
 import { fileURLToPath } from 'node:url';
-import readline from 'node:readline';
+import readline from 'node:readline/promises';
 
 const currentScript = fileURLToPath(import.meta.url);
 
@@ -43,8 +43,7 @@ cli.command('upgrade-dtk').action(async () => {
       output: process.stdout
     });
 
-    rl.question('Did you set `"type": "module"` inside your package.json?: ', (answer) => {
-    });
+    await rl.question('Did you set `"type": "module"` inside your package.json?:');
   }
 });
 
