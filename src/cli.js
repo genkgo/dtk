@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import findDtkFile from './find-dtk-file.js';
 import { fileURLToPath } from 'node:url';
+import readline from 'node:readline';
 
 const currentScript = fileURLToPath(import.meta.url);
 
@@ -29,7 +30,23 @@ try {
   process.exit(1);
 }
 
+async function readPackageJson() {
+  return JSON.parse(await fs.readFile(root + '/package.json'));
+}
+
 const cli = new CAC('g2dtk');
+
+cli.command('upgrade-dtk').action(async () => {
+  while ((await readPackageJson().type) !== 'module') {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    rl.question('Did you set `"type": "module"` inside your package.json?: ', (answer) => {
+    });
+  }
+});
 
 cli.command('serve', 'serve').action(() => {
   process.argv.push('--config', updatedConfigFile);
