@@ -17,5 +17,6 @@
   },
   "bin": {
     "g2dtk": "bin/g2dtk"
-  }
+  },
+  "version": "0.8.0"
 }
