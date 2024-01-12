@@ -105,14 +105,14 @@ cli.command('upgrade-dtk').action(async () => {
   console.log("\nNo space inside `@media screen and(` is not allowed in dart-sass. It must be `@media screen and (.");
   let answerMedia = (await rl.question('Do you want me to convert?:')).toLowerCase();
   if (answerMedia === 'y' || answerMedia === 'yes') {
-    let updatedFiles = updateInFiles(root + '/app/assets/scss', '@media screen and(', '@media screen and (');
+    let updatedFiles = await updateInFiles(root + '/app/assets/scss', '@media screen and(', '@media screen and (');
     console.log(`> Totally updated ${updatedFiles.length} files`);
   }
 
   console.log("\nTilde importing, like @import \"~normalize.css/normalize.css\", does not work with Vite. Do you want me to update?");
   let answerTildeImport = (await rl.question('Do you want me to convert?:')).toLowerCase();
   if (answerTildeImport === 'y' || answerTildeImport === 'yes') {
-    let updatedFiles = updateInFiles(root + '/app/assets/scss', '@import "~', '@import "');
+    let updatedFiles = await updateInFiles(root + '/app/assets/scss', '@import "~', '@import "');
     console.log(`> Totally updated ${updatedFiles.length} files`);
   }
 
