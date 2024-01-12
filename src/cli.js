@@ -95,7 +95,7 @@ cli.command('upgrade-dtk').action(async () => {
 
       let fileContents = await fs.readFile(scssFullName);
       if (fileContents.includes('@media screen and(')) {
-        fileContents = fileContents.replaceAll('@media screen and(', '@media screen and (');
+        fileContents = fileContents.toString().replaceAll('@media screen and(', '@media screen and (');
         await fs.writeFile(scssFullName, fileContents);
         console.log(`> Updated ${scssFullName}`);
         updatedFiles.push(scssFullName);
