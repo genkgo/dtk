@@ -60,6 +60,7 @@ export default defineConfig({
     assetsDir: '.',
   },
   server: {
+    host: '127.0.0.1',
     https: {
       cert: `${devServerLocation}/ssl/crt/genkgo.test/genkgo.test.crt`,
       ca: `${devServerLocation}/ssl/crt/genkgo.test/genkgo.test-ca.pem`,
