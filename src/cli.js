@@ -86,7 +86,7 @@ cli.command('upgrade-dtk').action(async () => {
         await fs.rm(root + '/.stylelintrc');
       }
 
-      await fs.writeFile(root + '/stylelintrc.json', await fs.readFile(dtk + '/default.stylelintrc.json'));
+      await fs.writeFile(root + '/.stylelintrc.json', await fs.readFile(dtk + '/default.stylelintrc.json'));
     } else {
       console.log('Update yourself and try again');
     }
