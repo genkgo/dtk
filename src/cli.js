@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {format} from 'node:util';
 
 const currentScript = fileURLToPath(import.meta.url);
+const dtk = path.dirname(currentScript);
 
 let updatedConfigFile, root;
 try {
@@ -19,7 +20,6 @@ try {
   root = path.dirname(appFile.filename);
   updatedConfigFile = root + '/node_modules/.vite/vite.config.js';
 
-  const dtk = path.dirname(currentScript);
   const appInstance = (await import(appFile.filename)).default;
 
   await fs.mkdir(root + '/node_modules/.vite', {recursive: true});
@@ -65,8 +65,43 @@ cli.command('upgrade-dtk').action(async () => {
     output: process.stdout
   });
 
-  while ((await readPackageJson()).type !== 'module') {
+  const packageJson = await readPackageJson();
+  while (packageJson.type !== 'module') {
     await rl.question('Did you set `"type": "module"` inside your package.json?:');
+  }
+
+  while (packageJson.devDependencies?.stylelint.includes('^13')) {
+    let answer = (await rl.question('Do you want me uto pdate your stylelint dependencies in package.json and create .stylelintrc.json?:')).toLowerCase();
+    if (answer === 'y' || answer === 'yes') {
+      packageJson.devDependencies['stylelint'] = '^16.1.0';
+      packageJson.devDependencies['stylelint-config-recommended-scss'] = '^14.0.0';
+      packageJson.devDependencies['stylelint-order'] = '^6.0.4';
+      packageJson.devDependencies['stylelint-scss'] = '^6.0.0';
+      packageJson.devDependencies['@stylistic/stylelint-plugin'] = '^2.0.0';
+      delete packageJson.devDependencies['stylelint-selector-bem-pattern'];
+      delete packageJson.devDependencies['stylelint-config-standard-scss'];
+      await fs.writeFile(root + '/package.json', JSON.stringify(packageJson));
+      if (existsSync(root + '/.stylelintrc')) {
+        await fs.rm(root + '/.stylelintrc');
+      }
+
+      await fs.writeFile(root + '/stylelintrc.json', await fs.readFile(dtk + '/default.stylelintrc.json'));
+    } else {
+      console.log('Update yourself and try again');
+    }
+  }
+
+  while (packageJson.devDependencies['@g2npm/dtk-lit-element']) {
+    let answer = (await rl.question('Do you want me to replace @g2npm/dtk-lit-element inside your package.json?:')).toLowerCase();
+    if (answer === 'y' || answer === 'yes') {
+      packageJson.dependencies['lit-element'] = '^2.1.0';
+      packageJson.dependencies['lit-html'] = '^1.1.0';
+      delete packageJson.devDependencies['@g2npm/dtk-lit-element'];
+    }
+  }
+
+  while ((await fs.readFile(root + '/g2dtk.js')).toString().includes('@g2npm/dtk-lit-element')) {
+    await rl.question('Did you remove @g2npm/dtk-lit-element references inside your g2dtk file? Also remove `...litElementNpmConfig` at the end of the file.');
   }
 
   while (existsSync(root + '/app/assets/favicon')) {

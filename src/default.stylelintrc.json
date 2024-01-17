@@ -1,0 +1,48 @@
+{
+  "extends": "stylelint-config-recommended-scss",
+  "overrides": [
+    {
+      "files": ["*.js"],
+      "customSyntax": "postcss-lit"
+    }
+  ],
+  "plugins": [
+    "stylelint-scss",
+    "stylelint-order",
+    "@stylistic/stylelint-plugin"
+  ],
+  "rules": {
+    "order/order": [
+      "custom-properties",
+      "declarations"
+    ],
+    "order/properties-alphabetical-order": true,
+    "scss/dollar-variable-pattern": "^foo",
+    "scss/selector-no-redundant-nesting-selector": true,
+    "block-no-empty": true,
+    "color-no-invalid-hex": true,
+    "comment-empty-line-before": [ "always", {
+      "ignore": ["stylelint-commands", "after-comment"]
+    } ],
+    "no-descending-specificity": true,
+    "rule-empty-line-before": [ "always", {
+      "except": ["first-nested"],
+      "ignore": ["after-comment"]
+    }],
+    "shorthand-property-no-redundant-values": true,
+    "value-no-vendor-prefix": true,
+    "@stylistic/at-rule-name-space-after": "always",
+    "@stylistic/declaration-colon-space-after": "always",
+    "@stylistic/indentation": [4, {
+      "except": ["value"],
+      "indentInsideParens": "twice",
+      "indentClosingBrace": false
+    }],
+    "@stylistic/max-empty-lines": 1,
+    "@stylistic/no-empty-first-line": true,
+    "@stylistic/no-missing-end-of-source-newline": true,
+    "@stylistic/number-leading-zero": "never",
+    "@stylistic/string-quotes": "double",
+    "@stylistic/unit-case": "lower"
+  }
+}
