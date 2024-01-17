@@ -80,7 +80,8 @@ cli.command('upgrade-dtk').action(async () => {
       packageJson.devDependencies['@stylistic/stylelint-plugin'] = '^2.0.0';
       delete packageJson.devDependencies['stylelint-selector-bem-pattern'];
       delete packageJson.devDependencies['stylelint-config-standard-scss'];
-      await fs.writeFile(root + '/package.json', JSON.stringify(packageJson));
+      await fs.writeFile(root + '/package.json', JSON.stringify(packageJson, null, 2));
+
       if (existsSync(root + '/.stylelintrc')) {
         await fs.rm(root + '/.stylelintrc');
       }
@@ -98,6 +99,8 @@ cli.command('upgrade-dtk').action(async () => {
       packageJson.dependencies['lit-html'] = '^1.1.0';
       delete packageJson.devDependencies['@g2npm/dtk-lit-element'];
     }
+
+    await fs.writeFile(root + '/package.json', JSON.stringify(packageJson, null, 2));
   }
 
   while ((await fs.readFile(root + '/g2dtk.js')).toString().includes('@g2npm/dtk-lit-element')) {
