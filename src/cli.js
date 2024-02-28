@@ -70,7 +70,7 @@ cli.command('upgrade-dtk').action(async () => {
     await rl.question('Did you set `"type": "module"` inside your package.json?:');
   }
 
-  while (packageJson.devDependencies?.stylelint.includes('^13')) {
+  while (packageJson.devDependencies?.stylelint && !packageJson.devDependencies.stylelint.includes('^16')) {
     let answer = (await rl.question('Do you want me uto pdate your stylelint dependencies in package.json and create .stylelintrc.json?:')).toLowerCase();
     if (answer === 'y' || answer === 'yes') {
       packageJson.devDependencies['stylelint'] = '^16.1.0';
