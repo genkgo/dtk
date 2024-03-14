@@ -35,9 +35,13 @@ class DtkApp {
   async convertConfig(options) {
     let configFile = options.dtk + '/vite.config.js'
     let targetFile = options.root + '/node_modules/.vite/vite.config.js';
-    let input = {
-      index: './app/assets/js/index.js',
-    };
+    let input = {};
+
+    if (this.config.js?.apps) {
+      this.config.js.apps.forEach((value) => input[value.directory] = `./${value.directory}`);
+    } else {
+      input['index'] = './app/assets/js/index.js';
+    }
 
     if (this.config.scss.compile) {
       this.config.scss.compile.forEach((value) => input[value] = `./app/assets/scss/${value}`);
