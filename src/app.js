@@ -38,7 +38,15 @@ class DtkApp {
     let input = {};
 
     if (this.config.js?.apps) {
-      this.config.js.apps.forEach((value) => input[value.directory] = `./${value.directory}`);
+      this.config.js.apps.forEach((value) => {
+        let appName = path.basename(value.directory);
+        let directory = value.directory;
+        if (directory.startsWith('/')) {
+          directory = directory.substring(1);
+        }
+
+        input[appName] = `./${value.directory}/${value.entrypoint}.js`
+      });
     } else {
       input['index'] = './app/assets/js/index.js';
     }
