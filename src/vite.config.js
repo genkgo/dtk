@@ -1,15 +1,17 @@
-import {defineConfig} from 'vite'
-import {ViteImageOptimizer} from 'vite-plugin-image-optimizer'
-import autoprefixer from 'autoprefixer'
+import {defineConfig} from 'vite';
+import {ViteImageOptimizer} from 'vite-plugin-image-optimizer';
+import autoprefixer from 'autoprefixer';
+import componentPrefixPlugin from "./component-prefix-plugin.js";
 
 const devServerLocation = process.env.G2SERVER || '/srv/genkgo';
 
 export default defineConfig({
   plugins: [
-    ViteImageOptimizer(),
+    ViteImageOptimizer(), componentPrefixPlugin()
   ],
   appType: 'custom',
   root: '{root}/app/assets',
+  project: '{root}',
   base: '/build',
   publicDir: 'app/assets',
   css: {
