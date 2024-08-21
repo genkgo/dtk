@@ -11,6 +11,20 @@ export default function componentPrefixPlugin() {
 
   return {
     name: 'component-prefix-plugin',
+
+    config(config, { command }) {
+      if (command === 'build') {
+        config.build = config.build || {};
+        config.build.rollupOptions = config.build.rollupOptions || {};
+        config.build.rollupOptions.output = config.build.rollupOptions.output || {};
+
+        const currentAssetFileNames = config.build.rollupOptions.output.assetFileNames;
+        config.build.rollupOptions.output.assetFileNames = (assetInfo) => {
+          return currentAssetFileNames(assetInfo);
+        };
+      }
+    },
+
     async configResolved(config) {
       const packageJson = await readPackageJson(config.project);
       for (let dependency of Object.keys(packageJson.dependencies)) {
@@ -33,8 +47,12 @@ export default function componentPrefixPlugin() {
               description: htmlElement.description,
             };
 
-            if (htmlElement.style?.link) {
-              components[htmlElement.name].css = path.resolve(`${config.project}/node_modules/${dependency}/${htmlElement.style?.link}`);
+            if (htmlElement.css?.source?.file) {
+              components[htmlElement.name].css = path.resolve(`${config.project}/node_modules/${dependency}/${htmlElement.css?.source?.file}`);
+            }
+
+            if (htmlElement.source?.file) {
+              components[htmlElement.name].js = path.resolve(`${config.project}/node_modules/${dependency}/${htmlElement.source?.file}`);
             }
 
             console.log(`Registered @component/${htmlElement.name}`);
@@ -42,6 +60,7 @@ export default function componentPrefixPlugin() {
         }
       }
     },
+
     resolveId(source) {
       if (source.startsWith('/@web-component/')) {
         let queryString = '';
@@ -64,6 +83,7 @@ export default function componentPrefixPlugin() {
 
       return null;
     },
+
     async load(id) {
       if (id.startsWith('web-component:')) {
         let file = id.substring(14);
@@ -80,6 +100,7 @@ export default function componentPrefixPlugin() {
 
       return null;
     },
+
     async buildStart() {
       for (const componentName of Object.keys(components)) {
         const component = components[componentName];
@@ -87,8 +108,9 @@ export default function componentPrefixPlugin() {
         this.emitFile({
           type: "asset",
           name: 'component/' + path.basename(component.css),
-          source: await fs.readFile(component.css)
-        })
+          source: await fs.readFile(component.css),
+          fileName: component.css,
+        });
       }
     }
   };
