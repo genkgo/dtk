@@ -1,7 +1,7 @@
 import {defineConfig} from 'vite';
 import {ViteImageOptimizer} from 'vite-plugin-image-optimizer';
 import autoprefixer from 'autoprefixer';
-import componentPrefixPlugin from "./component-prefix-plugin.js";
+import componentPrefixPlugin from "genkgo-dtk/src/component-prefix-plugin.js";
 
 const devServerLocation = process.env.G2SERVER || '/srv/genkgo';
 

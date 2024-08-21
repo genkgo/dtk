@@ -6,8 +6,48 @@ async function readPackageJson(root) {
   return JSON.parse(await fs.readFile(root + '/package.json'));
 }
 
+async function loadComponents(projectDir) {
+  let components = [];
+  const packageJson = await readPackageJson(projectDir);
+  for (let dependency of Object.keys(packageJson.dependencies)) {
+    const depPackageJsonFile = `${projectDir}/node_modules/${dependency}/package.json`;
+    if (!fsSync.existsSync(depPackageJsonFile)) {
+      continue;
+    }
+
+    const depPackageJson = await readPackageJson(`${projectDir}/node_modules/${dependency}`);
+    if (depPackageJson['web-types']) {
+      const webTypeFile = path.resolve(`${projectDir}/node_modules/${dependency}`, depPackageJson['web-types']);
+      if (!fsSync.existsSync(webTypeFile)) {
+        continue;
+      }
+
+      const webTypes = JSON.parse(await fs.readFile(webTypeFile));
+      for (const htmlElement of (webTypes.contributions.html.elements || [])) {
+        components[htmlElement.name] = {
+          name: htmlElement.name,
+          description: htmlElement.description,
+        };
+
+        if (htmlElement.css?.source?.file) {
+          components[htmlElement.name].css = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.css?.source?.file}`);
+        }
+
+        if (htmlElement.source?.file) {
+          components[htmlElement.name].js = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.source?.file}`);
+        }
+
+        console.log(`Registered @component/${htmlElement.name}`);
+      }
+    }
+  }
+
+  return components;
+}
+
 export default function componentPrefixPlugin() {
   let components = {};
+  let isBuild = false;
 
   return {
     name: 'component-prefix-plugin',
@@ -20,44 +60,23 @@ export default function componentPrefixPlugin() {
 
         const currentAssetFileNames = config.build.rollupOptions.output.assetFileNames;
         config.build.rollupOptions.output.assetFileNames = (assetInfo) => {
+          if (assetInfo.name.startsWith('component/')) {
+            return '[name]-[hash][extname]';
+          }
+
           return currentAssetFileNames(assetInfo);
         };
       }
     },
 
     async configResolved(config) {
-      const packageJson = await readPackageJson(config.project);
-      for (let dependency of Object.keys(packageJson.dependencies)) {
-        const depPackageJsonFile = `${config.project}/node_modules/${dependency}/package.json`;
-        if (!fsSync.existsSync(depPackageJsonFile)) {
-          continue;
-        }
+      isBuild = config.command === 'build';
+      components = await loadComponents(config.project);
 
-        const depPackageJson = await readPackageJson(`${config.project}/node_modules/${dependency}`);
-        if (depPackageJson['web-types']) {
-          const webTypeFile = path.resolve(`${config.project}/node_modules/${dependency}`, depPackageJson['web-types']);
-          if (!fsSync.existsSync(webTypeFile)) {
-            continue;
-          }
-
-          const webTypes = JSON.parse(await fs.readFile(webTypeFile));
-          for (const htmlElement of (webTypes.contributions.html.elements || [])) {
-            components[htmlElement.name] = {
-              name: htmlElement.name,
-              description: htmlElement.description,
-            };
-
-            if (htmlElement.css?.source?.file) {
-              components[htmlElement.name].css = path.resolve(`${config.project}/node_modules/${dependency}/${htmlElement.css?.source?.file}`);
-            }
-
-            if (htmlElement.source?.file) {
-              components[htmlElement.name].js = path.resolve(`${config.project}/node_modules/${dependency}/${htmlElement.source?.file}`);
-            }
-
-            console.log(`Registered @component/${htmlElement.name}`);
-          }
-        }
+      config.build.rollupOptions.input = config.build.rollupOptions.input || {};
+      for (const componentName of Object.keys(components)) {
+        const component = components[componentName];
+        config.build.rollupOptions.input[`component/${component.name}.js`] = component.js;
       }
     },
 
@@ -102,14 +121,18 @@ export default function componentPrefixPlugin() {
     },
 
     async buildStart() {
+      if (!isBuild) {
+        return;
+      }
+
       for (const componentName of Object.keys(components)) {
         const component = components[componentName];
 
         this.emitFile({
-          type: "asset",
+          type: 'asset',
           name: 'component/' + path.basename(component.css),
           source: await fs.readFile(component.css),
-          fileName: component.css,
+          originalFileName: component.css,
         });
       }
     }
