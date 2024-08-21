@@ -1,9 +1,14 @@
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import path from "node:path";
+import crypto from 'node:crypto';
 
 async function readPackageJson(root) {
   return JSON.parse(await fs.readFile(root + '/package.json'));
+}
+
+function getHash(content) {
+  return crypto.createHash('sha256').update(content).digest('hex').slice(0, 8);
 }
 
 async function loadComponents(projectDir) {
@@ -50,7 +55,7 @@ export default function componentPrefixPlugin() {
   let isBuild = false;
 
   return {
-    name: 'component-prefix-plugin',
+    name: 'web-component-prefix-plugin',
 
     config(config, { command }) {
       if (command === 'build') {
@@ -60,7 +65,7 @@ export default function componentPrefixPlugin() {
 
         const currentAssetFileNames = config.build.rollupOptions.output.assetFileNames;
         config.build.rollupOptions.output.assetFileNames = (assetInfo) => {
-          if (assetInfo.name.startsWith('component/')) {
+          if (assetInfo.name.startsWith('web-component/')) {
             return '[name]-[hash][extname]';
           }
 
@@ -76,7 +81,7 @@ export default function componentPrefixPlugin() {
       config.build.rollupOptions.input = config.build.rollupOptions.input || {};
       for (const componentName of Object.keys(components)) {
         const component = components[componentName];
-        config.build.rollupOptions.input[`component/${component.name}.js`] = component.js;
+        config.build.rollupOptions.input[`web-component/${component.name}`] = component.js;
       }
     },
 
@@ -127,12 +132,13 @@ export default function componentPrefixPlugin() {
 
       for (const componentName of Object.keys(components)) {
         const component = components[componentName];
+        const source = await fs.readFile(component.css);
 
         this.emitFile({
           type: 'asset',
-          name: 'component/' + path.basename(component.css),
-          source: await fs.readFile(component.css),
-          originalFileName: component.css,
+          name: 'web-component/' + path.basename(component.css),
+          source: source,
+          fileName: `web-component/${path.basename(component.css, '.css')}-${getHash(source)}.css`,
         });
       }
     }
