@@ -35,6 +35,7 @@ export default defineConfig({
     manifest: true,
     rollupOptions: {
       preserveEntrySignatures: "strict",
+      external: '{external}',
       output: {
         preserveModules: true,
         assetFileNames: (asset) => {
