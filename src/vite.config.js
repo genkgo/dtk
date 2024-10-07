@@ -12,7 +12,7 @@ export default defineConfig({
   appType: 'custom',
   root: '{root}/app/assets',
   project: '{root}',
-  base: '/build',
+  base: '{base}',
   publicDir: 'app/assets',
   css: {
     postcss: {
@@ -29,6 +29,7 @@ export default defineConfig({
       'jquery-ui': '{dtk}/../dep/jquery-ui',
     }
   },
+  assetsInclude: ['**/*.xml'],
   build: {
     assetsInlineLimit: 0,
     manifest: true,
@@ -37,6 +38,11 @@ export default defineConfig({
       output: {
         preserveModules: true,
         assetFileNames: (asset) => {
+          const originalFileName = asset.originalFileName;
+          if (originalFileName && originalFileName.startsWith('img/')) {
+            return originalFileName;
+          }
+
           switch (asset.name.split('.').pop()) {
             case 'css':
               return 'css/[name]-[hash][extname]';
@@ -58,7 +64,7 @@ export default defineConfig({
       },
       input: {/** {INPUT} **/},
     },
-    outDir: '{root}/public/build',
+    outDir: '{outputDir}',
     assetsDir: '.',
   },
   server: {

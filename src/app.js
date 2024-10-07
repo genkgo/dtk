@@ -23,13 +23,6 @@ class DtkApp {
     if (fsSync.existsSync(options.root + '/app/assets/favicon')) {
       throw new Error('Remove favicon directory, move to admin');
     }
-
-    if (fsSync.existsSync(options.root + '/app/assets/img')) {
-      let imageSubdirectories = await getDirectories(options.root + '/app/assets/img');
-      if (imageSubdirectories.length > 0) {
-        throw new Error('Subdirectories inside ./app/assets/img are not supported (yet)');
-      }
-    }
   }
 
   async convertConfig(options) {
@@ -57,17 +50,26 @@ class DtkApp {
       input['css'] = './app/assets/scss/style.scss';
     }
 
+    let base = '/build'
+    let outputDir = `${options.root}/public/build`;
+    if (typeof this.config.outputDir === 'function') {
+      outputDir = this.config.outputDir({ outputDir });
+      base = outputDir.replace(`${options.root}/public`, '');
+    }
+
     let configFileContent = await fs.readFile(configFile);
     let config = new MagicString(configFileContent);
     config.replace('{/** {INPUT} **/}', JSON.stringify(input));
     config.replaceAll('{root}', options.root);
+    config.replaceAll('{outputDir}', outputDir);
+    config.replaceAll('{base}', base);
     config.replaceAll('{dtk}', options.dtk);
     await fs.writeFile(targetFile, config.toString());
   }
 
   async writeNpmScssImport(options) {
     let css = [];
-    for (let npmModuleName of Object.keys(this.config.npm)) {
+    for (let npmModuleName of Object.keys(this.config.npm || {})) {
       let npmModule = this.config.npm[npmModuleName];
 
       let cssFilter = null;
