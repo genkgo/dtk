@@ -20,7 +20,8 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['{root}/app/assets/js/**/*.js']
+    include: ['{root}/app/assets/js/**/*.js'],
+    exclude: ['@g2ui/generic-elements'],
   },
   resolve: {
     alias: {
@@ -35,7 +36,6 @@ export default defineConfig({
     manifest: true,
     rollupOptions: {
       preserveEntrySignatures: "strict",
-      external: '{external}',
       output: {
         preserveModules: true,
         assetFileNames: (asset) => {

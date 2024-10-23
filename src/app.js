@@ -64,7 +64,11 @@ class DtkApp {
     config.replaceAll('{outputDir}', outputDir);
     config.replaceAll('{base}', base);
     config.replaceAll('{dtk}', options.dtk);
-    config.replaceAll("'{external}'", JSON.stringify(this.config.external || []));
+
+    if (typeof this.config.vite === 'function') {
+      this.config.vite(config);
+    }
+
     await fs.writeFile(targetFile, config.toString());
   }
 
