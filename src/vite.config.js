@@ -21,6 +21,10 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['{root}/app/assets/js/**/*.js'],
+
+    // https://github.com/vitejs/vite/issues/8427
+    // https://github.com/vitejs/vite/pull/16418
+    // https://github.com/vitejs/vite/pull/17837
     exclude: ['@g2ui/generic-elements'],
   },
   resolve: {
