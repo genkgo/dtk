@@ -65,10 +65,6 @@ class DtkApp {
     config.replaceAll('{base}', base);
     config.replaceAll('{dtk}', options.dtk);
 
-    if (typeof this.config.vite === 'function') {
-      this.config.vite(config);
-    }
-
     await fs.writeFile(targetFile, config.toString());
   }
 
