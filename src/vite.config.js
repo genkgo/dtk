@@ -5,9 +5,22 @@ import componentPrefixPlugin from "genkgo-dtk/src/component-prefix-plugin.js";
 
 const devServerLocation = process.env.G2SERVER || '/srv/genkgo';
 
+
+const projectRoutePlugin = {
+  name: 'project-route',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      if (req.url.startsWith('{base}/@project')) {
+        req.url = '{base}/@fs{root}/' + req.url.replace('{base}/@project/', '');
+      }
+      next()
+    })
+  }
+}
+
 export default defineConfig({
   plugins: [
-    ViteImageOptimizer(), componentPrefixPlugin()
+    ViteImageOptimizer(), componentPrefixPlugin(), projectRoutePlugin
   ],
   appType: 'custom',
   root: '{root}/app/assets',
@@ -73,7 +86,7 @@ export default defineConfig({
     assetsDir: '.',
   },
   server: {
-    host: '127.0.0.1',
+    host: '0.0.0.0',
     https: {
       cert: `${devServerLocation}/ssl/crt/genkgo.test/genkgo.test.crt`,
       ca: `${devServerLocation}/ssl/crt/genkgo.test/genkgo.test-ca.pem`,
