@@ -18,5 +18,5 @@
   "bin": {
     "g2dtk": "bin/g2dtk"
   },
-  "version": "0.8.15"
+  "version": "0.8.16"
 }
