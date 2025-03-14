@@ -11,7 +11,10 @@ function getHash(content) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 8);
 }
 
-async function loadComponents(projectDir) {
+async function loadComponents(config) {
+  const projectDir = config.project;
+  const rootDir = config.root;
+
   let components = [];
   const packageJson = await readPackageJson(projectDir);
   for (let dependency of Object.keys(packageJson.dependencies)) {
@@ -32,14 +35,17 @@ async function loadComponents(projectDir) {
         components[htmlElement.name] = {
           name: htmlElement.name,
           description: htmlElement.description,
+          package: dependency,
         };
 
         if (htmlElement.css?.source?.file) {
           components[htmlElement.name].css = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.css?.source?.file}`);
+          components[htmlElement.name].manifestCss = path.relative(rootDir, components[htmlElement.name].css);
         }
 
         if (htmlElement.source?.file) {
           components[htmlElement.name].js = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.source?.file}`);
+          components[htmlElement.name].manifestJs = path.relative(rootDir, components[htmlElement.name].js);
         }
 
         console.log(`Registered @component/${htmlElement.name}`);
@@ -53,6 +59,7 @@ async function loadComponents(projectDir) {
 export default function componentPrefixPlugin() {
   let components = {};
   let isBuild = false;
+  let outputDir = 'dist';
 
   return {
     name: 'web-component-prefix-plugin',
@@ -62,6 +69,7 @@ export default function componentPrefixPlugin() {
         config.build = config.build || {};
         config.build.rollupOptions = config.build.rollupOptions || {};
         config.build.rollupOptions.output = config.build.rollupOptions.output || {};
+        outputDir = config.build.outDir || 'dist';
 
         const currentAssetFileNames = config.build.rollupOptions.output.assetFileNames;
         config.build.rollupOptions.output.assetFileNames = (assetInfo) => {
@@ -76,7 +84,7 @@ export default function componentPrefixPlugin() {
 
     async configResolved(config) {
       isBuild = config.command === 'build';
-      components = await loadComponents(config.project);
+      components = await loadComponents(config);
 
       config.build.rollupOptions.input = config.build.rollupOptions.input || {};
       for (const componentName of Object.keys(components)) {
@@ -130,17 +138,41 @@ export default function componentPrefixPlugin() {
         return;
       }
 
+      const result = {};
       for (const componentName of Object.keys(components)) {
         const component = components[componentName];
         const source = await fs.readFile(component.css);
+        const fileName = `web-component/${path.basename(component.css, '.css')}-${getHash(source)}.css`;
 
         this.emitFile({
           type: 'asset',
           name: 'web-component/' + path.basename(component.css),
           source: source,
-          fileName: `web-component/${path.basename(component.css, '.css')}-${getHash(source)}.css`,
+          fileName,
         });
       }
+    },
+
+    async closeBundle() {
+      if (components.length === 0) {
+        return;
+      }
+
+      const manifest = JSON.parse(await fs.readFile(path.join(outputDir, '.vite/manifest.json'), 'utf-8'));
+      const result = {};
+
+      for (const componentName of Object.keys(components)) {
+        const component = components[componentName];
+
+        result[componentName] = {
+          name: componentName,
+          package: component.package,
+          file: manifest[component.manifestJs].file,
+          stylesheet: manifest[component.manifestCss].file,
+        }
+      }
+
+      await fs.writeFile(path.join(outputDir, '.vite/webcomponents.json'), JSON.stringify(result, null, 2), 'utf-8');
     }
   };
 }
