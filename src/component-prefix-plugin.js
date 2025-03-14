@@ -154,7 +154,7 @@ export default function componentPrefixPlugin() {
     },
 
     async closeBundle() {
-      if (components.length === 0) {
+      if (Object.keys(components).length === 0) {
         return;
       }
 
