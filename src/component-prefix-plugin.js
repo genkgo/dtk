@@ -39,13 +39,21 @@ async function loadComponents(config) {
         };
 
         if (htmlElement.css?.source?.file) {
-          components[htmlElement.name].css = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.css?.source?.file}`);
-          components[htmlElement.name].manifestCss = path.relative(rootDir, components[htmlElement.name].css);
+          const cssPath = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.css?.source?.file}`);
+          components[htmlElement.name].css = {
+            source: path.relative(`${projectDir}/node_modules/${dependency}`, htmlElement.css?.source?.file),
+            path: cssPath,
+            pathFromRoot: path.relative(rootDir, cssPath),
+          };
         }
 
         if (htmlElement.source?.file) {
-          components[htmlElement.name].js = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.source?.file}`);
-          components[htmlElement.name].manifestJs = path.relative(rootDir, components[htmlElement.name].js);
+          const jsPath = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.source?.file}`);
+          components[htmlElement.name].js = {
+            source: path.relative(path.dirname(`${projectDir}/node_modules/${dependency}/${depPackageJson.main}`), jsPath),
+            path: jsPath,
+            pathFromRoot: path.relative(rootDir, jsPath),
+          };
         }
 
         console.log(`Registered @component/${htmlElement.name}`);
@@ -89,7 +97,7 @@ export default function componentPrefixPlugin() {
       config.build.rollupOptions.input = config.build.rollupOptions.input || {};
       for (const componentName of Object.keys(components)) {
         const component = components[componentName];
-        config.build.rollupOptions.input[`web-component/${component.name}`] = component.js;
+        config.build.rollupOptions.input[`web-component/${component.name}`] = component.js.path;
       }
     },
 
@@ -141,12 +149,12 @@ export default function componentPrefixPlugin() {
       const result = {};
       for (const componentName of Object.keys(components)) {
         const component = components[componentName];
-        const source = await fs.readFile(component.css);
-        const fileName = `web-component/${path.basename(component.css, '.css')}-${getHash(source)}.css`;
+        const source = await fs.readFile(component.css.path);
+        const fileName = `web-component/${path.basename(component.css.path, '.css')}-${getHash(source)}.css`;
 
         this.emitFile({
           type: 'asset',
-          name: 'web-component/' + path.basename(component.css),
+          name: 'web-component/' + path.basename(component.css.path),
           source: source,
           fileName,
         });
@@ -167,8 +175,9 @@ export default function componentPrefixPlugin() {
         result[componentName] = {
           name: componentName,
           package: component.package,
-          file: manifest[component.manifestJs].file,
-          stylesheet: manifest[component.manifestCss].file,
+          input: `${component.package}/${component.js.source}`,
+          output: manifest[component.js.pathFromRoot].file,
+          stylesheet: manifest[component.css.pathFromRoot].file,
         }
       }
 
