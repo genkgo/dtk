@@ -12,8 +12,15 @@ function getHash(content) {
 }
 
 async function loadComponents(projectDir) {
-  let components = [];
+  let components = {};
   const packageJson = await readPackageJson(projectDir);
+  if (packageJson['web-types']) {
+    components = {
+      ...components,
+      ...await loadWebtypes(projectDir, packageJson['web-types'])
+    };
+  }
+
   for (let dependency of Object.keys(packageJson.dependencies)) {
     const depPackageJsonFile = `${projectDir}/node_modules/${dependency}/package.json`;
     if (!fsSync.existsSync(depPackageJsonFile)) {
@@ -22,29 +29,39 @@ async function loadComponents(projectDir) {
 
     const depPackageJson = await readPackageJson(`${projectDir}/node_modules/${dependency}`);
     if (depPackageJson['web-types']) {
-      const webTypeFile = path.resolve(`${projectDir}/node_modules/${dependency}`, depPackageJson['web-types']);
-      if (!fsSync.existsSync(webTypeFile)) {
-        continue;
-      }
-
-      const webTypes = JSON.parse(await fs.readFile(webTypeFile));
-      for (const htmlElement of (webTypes.contributions.html.elements || [])) {
-        components[htmlElement.name] = {
-          name: htmlElement.name,
-          description: htmlElement.description,
-        };
-
-        if (htmlElement.css?.source?.file) {
-          components[htmlElement.name].css = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.css?.source?.file}`);
-        }
-
-        if (htmlElement.source?.file) {
-          components[htmlElement.name].js = path.resolve(`${projectDir}/node_modules/${dependency}/${htmlElement.source?.file}`);
-        }
-
-        console.log(`Registered @component/${htmlElement.name}`);
-      }
+      components = {
+        ...components,
+        ...await loadWebtypes(`${projectDir}/node_modules/${dependency}`, depPackageJson['web-types'])
+      };
     }
+  }
+
+  return components;
+}
+
+async function loadWebtypes(dir, webTypeFileName) {
+  const webTypeFile = path.resolve(dir, webTypeFileName);
+  if (!fsSync.existsSync(webTypeFile)) {
+    return;
+  }
+
+  const components = {};
+  const webTypes = JSON.parse(await fs.readFile(webTypeFile));
+  for (const htmlElement of (webTypes.contributions.html.elements || [])) {
+    components[htmlElement.name] = {
+      name: htmlElement.name,
+      description: htmlElement.description,
+    };
+
+    if (htmlElement.css?.source?.file) {
+      components[htmlElement.name].css = path.resolve(`${dir}/${htmlElement.css?.source?.file}`);
+    }
+
+    if (htmlElement.source?.file) {
+      components[htmlElement.name].js = path.resolve(`${dir}/${htmlElement.source?.file}`);
+    }
+
+    console.log(`Registered @component/${htmlElement.name}`);
   }
 
   return components;
@@ -53,6 +70,7 @@ async function loadComponents(projectDir) {
 export default function componentPrefixPlugin() {
   let components = {};
   let isBuild = false;
+  const idFileMap = {};
 
   return {
     name: 'web-component-prefix-plugin',
@@ -116,6 +134,8 @@ export default function componentPrefixPlugin() {
           file = file.substring(0, questionMark);
         }
 
+        idFileMap[file] = id;
+
         return {
           code: await fs.readFile(file, 'utf-8'),
           map: null
@@ -123,6 +143,13 @@ export default function componentPrefixPlugin() {
       }
 
       return null;
+    },
+
+    handleHotUpdate({ file, server }) {
+      const id = idFileMap[file];
+      if (id) {
+        server.moduleGraph.invalidateModule(server.moduleGraph.getModuleById());
+      }
     },
 
     async buildStart() {
