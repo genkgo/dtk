@@ -148,7 +148,7 @@ export default function componentPrefixPlugin() {
     handleHotUpdate({ file, server }) {
       const id = idFileMap[file];
       if (id) {
-        server.moduleGraph.invalidateModule(server.moduleGraph.getModuleById());
+        server.moduleGraph.invalidateModule(server.moduleGraph.getModuleById(id));
       }
     },
 
