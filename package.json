@@ -3,7 +3,7 @@
   "main": "src/app.js",
   "type": "module",
   "engines": {
-    "node": "^20.9"
+    "node": "^20.9 || ^22.15"
   },
   "dependencies": {
     "autoprefixer": "^10.4.16",
