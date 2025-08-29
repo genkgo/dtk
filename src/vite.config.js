@@ -2,10 +2,9 @@ import {defineConfig} from 'vite';
 import {ViteImageOptimizer} from 'vite-plugin-image-optimizer';
 import autoprefixer from 'autoprefixer';
 import componentPrefixPlugin from "genkgo-dtk/src/component-prefix-plugin.js";
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const devServerLocation = process.env.G2SERVER || '/srv/genkgo';
-
-
 const projectRoutePlugin = {
   name: 'project-route',
   configureServer(server) {
@@ -20,7 +19,12 @@ const projectRoutePlugin = {
 
 export default defineConfig({
   plugins: [
-    ViteImageOptimizer(), componentPrefixPlugin(), projectRoutePlugin
+    ViteImageOptimizer(),
+    componentPrefixPlugin(),
+    projectRoutePlugin,
+    viteStaticCopy({
+      targets: '{copy}',
+    }),
   ],
   appType: 'custom',
   root: '{root}/app/assets',

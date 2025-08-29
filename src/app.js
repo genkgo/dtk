@@ -65,6 +65,7 @@ class DtkApp {
     config.replaceAll('{base}', base);
     config.replaceAll('{dtk}', options.dtk);
     config.replaceAll("'{external}'", JSON.stringify(this.config.external || []));
+    config.replaceAll("'{copy}'", JSON.stringify((this.config.copy || []).map(src => { return { src, dest: '' } })));
 
     await fs.writeFile(targetFile, config.toString());
   }
