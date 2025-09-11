@@ -99,7 +99,9 @@ export default function componentPrefixPlugin() {
       config.build.rollupOptions.input = config.build.rollupOptions.input || {};
       for (const componentName of Object.keys(components)) {
         const component = components[componentName];
-        config.build.rollupOptions.input[`web-component/${component.name}`] = component.js;
+        if (component.js) {
+          config.build.rollupOptions.input[`web-component/${component.name}`] = component.js;
+        }
       }
     },
 
