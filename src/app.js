@@ -61,6 +61,7 @@ class DtkApp {
     let config = new MagicString(configFileContent);
     config.replace('{/** {INPUT} **/}', JSON.stringify(input));
     config.replaceAll('{root}', options.root);
+    config.replaceAll('{project}', path.basename(options.root));
     config.replaceAll('{outputDir}', outputDir);
     config.replaceAll('{base}', base);
     config.replaceAll('{dtk}', options.dtk);

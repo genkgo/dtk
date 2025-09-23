@@ -99,6 +99,9 @@ export default defineConfig({
     },
     cors: {
       origin: '*'
-    }
+    },
+    hmr: {
+      host: process.env.VITE_HMR_HOST || '{project}.genkgo.test',
+    },
   }
 })
