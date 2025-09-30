@@ -161,14 +161,16 @@ export default function componentPrefixPlugin() {
 
       for (const componentName of Object.keys(components)) {
         const component = components[componentName];
-        const source = await fs.readFile(component.css);
+        if (component.css) {
+          const source = await fs.readFile(component.css);
 
-        this.emitFile({
-          type: 'asset',
-          name: 'web-component/' + path.basename(component.css),
-          source: source,
-          fileName: `web-component/${path.basename(component.css, '.css')}-${getHash(source)}.css`,
-        });
+          this.emitFile({
+            type: 'asset',
+            name: 'web-component/' + path.basename(component.css),
+            source: source,
+            fileName: `web-component/${path.basename(component.css, '.css')}-${getHash(source)}.css`,
+          });
+        }
       }
     }
   };
