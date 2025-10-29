@@ -3,7 +3,7 @@
   "main": "src/app.js",
   "type": "module",
   "engines": {
-    "node": "^20.9 || ^22.15"
+    "node": "^22.21 || ^24.11"
   },
   "dependencies": {
     "autoprefixer": "^10.4.16",
@@ -12,7 +12,7 @@
     "sass": "^1.69.7",
     "sharp": "^0.33.1",
     "svgo": "^3.2.0",
-    "vite": "^5.0.2",
+    "vite": "^5.4.21",
     "vite-plugin-image-optimizer": "^1.1.7",
     "vite-plugin-static-copy": "^3.1.2"
   },
