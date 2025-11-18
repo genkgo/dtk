@@ -5,23 +5,11 @@ import componentPrefixPlugin from "genkgo-dtk/src/component-prefix-plugin.js";
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 const devServerLocation = process.env.G2SERVER || '/srv/genkgo';
-const projectRoutePlugin = {
-  name: 'project-route',
-  configureServer(server) {
-    server.middlewares.use((req, res, next) => {
-      if (req.url.startsWith('{base}/@project')) {
-        req.url = '{base}/@fs{root}/' + req.url.replace('{base}/@project/', '');
-      }
-      next()
-    })
-  }
-}
 
 export default defineConfig({
   plugins: [
     ViteImageOptimizer(),
     componentPrefixPlugin(),
-    projectRoutePlugin,
     viteStaticCopy({
       targets: '{copy}',
     }),
