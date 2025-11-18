@@ -89,7 +89,7 @@ export default defineConfig({
       origin: '*'
     },
     hmr: {
-      host: process.env.VITE_HMR_HOST || '{project}.genkgo.test',
+      host: process.env.VITE_HMR_HOST || 'genkgo.test',
     },
   }
 })
