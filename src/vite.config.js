@@ -59,7 +59,7 @@ export default defineConfig({
       preserveEntrySignatures: "strict",
       external: '{external}',
       output: {
-        preserveModules: true,
+        preserveModules: JSON.parse('{preserveModules}'),
         assetFileNames: (asset) => {
           const originalFileName = asset.originalFileName;
           if (originalFileName && originalFileName.startsWith('img/')) {
