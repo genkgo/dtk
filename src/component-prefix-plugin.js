@@ -21,7 +21,7 @@ async function loadComponents(projectDir) {
     };
   }
 
-  for (let dependency of Object.keys(packageJson.dependencies)) {
+  for (let dependency of Object.keys(packageJson.dependencies || {})) {
     const depPackageJsonFile = `${projectDir}/node_modules/${dependency}/package.json`;
     if (!fsSync.existsSync(depPackageJsonFile)) {
       continue;

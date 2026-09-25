@@ -44,7 +44,7 @@ class DtkApp {
       input['index'] = './app/assets/js/index.js';
     }
 
-    if (this.config.scss.compile) {
+    if (this.config.scss?.compile) {
       this.config.scss.compile.forEach((value) => input[value] = `./app/assets/scss/${value}`);
     } else {
       input['css'] = './app/assets/scss/style.scss';
